@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Activity Form</title>
+    <style>
+        li {
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+    </style>
+    
+</head>
+<body>
+    <h2>Add Activity</h2>
+    <form id="activity-form" method = "post" action  = "/">
+
+        <label for="activity_date">Activity Date (mm-dd-yyyy):</label>
+        <input type="text" id="activity_date" name="activity_date" pattern="\d{2}-\d{2}-\d{4}" required><br><br>
+
+        <label for="importance">Importance (1-10):</label>
+        <input type="number" id="importance" name="importance" min="1" max="10" required><br><br>
+
+        <label for="time_spent_hrs">Time Spent (in hours):</label>
+        <input type="number" id="time_spent_hrs" name="time_spent_hrs" step="0.01" required><br><br>
+
+        <button type="submit">Submit</button>
+
+    </form>
+
+    <h2>Filter Form</h2>
+    <form id="filter-form" method="post" action="/filter">
+        <label for="filter_activity_id"> Activity Id: </label>
+        <input type="number" id="filter_activity_id" name="filter_activity_id"><br><br>
+
+        <label for="filter_date">Activity Date (mm-dd-yyyy):</label>
+        <input type="text" id="filter_date" name="filter_date" pattern="\d{2}-\d{2}-\d{4}"><br><br>
+
+        <label for="filter_importance">Importance (1-10):</label>
+        <input type="number" id="filter_importance" name="filter_importance" min="1" max="10"><br><br>
+
+        <label for="filter_time_spent_hrs">Time Spent (in hours):</label>
+        <input type="number" id="filter_time_spent_hrs" name="filter_time_spent_hrs" step="0.01"><br><br>
+
+        <label for="filter_productivity">Productivity:</label>
+        <input type="number" id="filter_productivity" name="filter_productivity" step="0.01" ><br><br>
+
+        <button type="submit">Filter</button>
+    </form>
+
+
+    <h2> Edit An Activity</h2>
+    <form id="edit-form" method="post" action="/edit">
+        <label for="edit_activity_id"> Activity Id To Be Edited: </label>
+        <input type="number" id="edit_activity_id" name="edit_activity_id" required><br><br>
+    
+        <label for="edit_date">Edit Activity Date (mm-dd-yyyy):</label>
+        <input type="text" id="edit_date" name="edit_date" pattern="\d{2}-\d{2}-\d{4}" required><br><br>
+    
+        <label for="edit_importance">Edit Importance (1-10):</label>
+        <input type="number" id="edit_importance" name="edit_importance" min="1" max="10" required><br><br>
+    
+        <label for="edit_time_spent_hrs">Edit Time Spent (in hours):</label>
+        <input type="number" id="edit_time_spent_hrs" name="edit_time_spent_hrs" step="0.01" required><br><br>
+    
+        <button type="submit">Edit Activity</button>
+    </form>
+    
+
+    <h2>Activity List</h2>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Activity Date</th>
+            <th>Importance</th>
+            <th>Time Spent (hours)</th>
+            <th>Productivity Score</th>
+        </tr>
+        {% for activity in activities %}
+            <tr>
+                <td>{{ activity.id }}</td>
+                <td>{{ activity.activity_date }}</td>
+                <td>{{ activity.importance }}</td>
+                <td>{{ activity.time_spent_hrs }}</td>
+                <td>{{ activity.productivity_score }}</td>
+                <td>
+                     <!-- Delete Button - Link to a delete action -->
+                     <a href="#" onclick="confirmDelete('{{ activity.id }}')">Delete</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    <br>
+    <h2>Aggregate Report</h2>
+    <table>
+        <tr>
+            <th>Record Count</th>
+            <th>Earliest Date</th>
+            <th>Latest Date</th>
+            <th>Avg Importance</th>
+            <th>Avg Time Spent</th>
+            <th>Avg Productivity Score</th>
+        </tr>
+        <tr>
+            <td>{{ summary_data.record_count }}</td>
+            <td>{{ summary_data.earliest_date }}</td>
+            <td>{{ summary_data.latest_date }}</td>
+            <td>{{ summary_data.avg_importance }}</td>
+            <td>{{ summary_data.avg_time_spent }}</td>
+            <td>{{ summary_data.avg_productivity_score }}</td>
+        </tr>
+    </table>
+
+    
+
+    <script>
+        function confirmDelete(activityId) {
+            if (confirm("Are you sure you want to delete this activity?")) {
+                window.location.href = "/delete/" + activityId;
+            }
+        }
+    </script>
+
+    <script>
+        function confirmEdit() {
+            var activityId = document.getElementById("edit_activity_id").value;
+            return confirm("Are you sure you want to edit activity with ID " + activityId + "?");
+        }
+    </script>
+    
+
+    <!-- <script>
+        document.getElementById('activity-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+    
+            // Get values from the form
+            const activityDate = document.getElementById('activity_date').value;
+            const importance = parseFloat(document.getElementById('importance').value);
+            const timeSpent = parseFloat(document.getElementById('time_spent_hrs').value);
+    
+            // Create an object to hold the form data
+            const formData = {
+                activity_date: activityDate,
+                importance: importance,
+                time_spent_hrs: timeSpent
+            };
+    
+            // Send the form data to the backend using a fetch request
+            fetch('/submit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Display a message to the user based on the response from the backend
+                document.getElementById('message').textContent = data.message;
+            });
+        });
+    </script> -->
+</body>
+</html>
